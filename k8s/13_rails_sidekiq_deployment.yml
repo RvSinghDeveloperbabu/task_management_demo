@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rails-sidekiq-app
+  namespace: task-app-namespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rails-sidekiq-app
+  template:
+    metadata:
+      labels:
+        app: rails-sidekiq-app
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+      terminationGracePeriodSeconds: 45
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+      - name: task-app-backend
+        image: 929219061160.dkr.ecr.ap-southeast-2.amazonaws.com/task-app-backend:latest
+        command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+        envFrom:
+          - configMapRef: {name: task-app-configmap}
+          - secretRef: {name: task-app-secret}
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+          - name: rds-ca-cert
+            mountPath: /app/config/certs
+            readOnly: true
+      volumes:
+      - name: rds-ca-cert
+        configMap:
+          name: rds-ca-cert
+          

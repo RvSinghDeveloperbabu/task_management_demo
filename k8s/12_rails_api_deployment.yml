@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rails-api-app
+  namespace: task-app-namespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rails-api-app
+  template:
+    metadata:
+      labels:
+        app: rails-api-app
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+      terminationGracePeriodSeconds: 45
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+      - name: task-app-app
+        image: 929219061160.dkr.ecr.ap-southeast-2.amazonaws.com/task-app-backend:latest
+        envFrom:
+          - configMapRef: {name: task-app-configmap}
+          - secretRef: {name: task-app-secret}
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "768Mi"
+            cpu: "1"
+        volumeMounts:
+        - name: rds-ca-cert
+          mountPath: /app/config/certs
+          readOnly: true
+        ports:
+        - containerPort: 3000
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          failureThreshold: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet: 
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /ready
+            port: 3000
+          initialDelaySeconds: 15
+      volumes:
+      - name: rds-ca-cert
+        configMap:
+          name: rds-ca-cert
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rails-api-service
+  namespace: task-app-namespace
+spec:
+  type: ClusterIP
+  selector:
+    app: rails-api-app
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP

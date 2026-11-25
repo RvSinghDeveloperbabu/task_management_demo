@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-app-configmap
+  namespace: task-app-namespace
+data:
+  RAILS_LOG_LEVEL: info
+  REDIS_URL: "redis://redis-service.task-app-namespace.svc.cluster.local:6379/0"
+  BACKEND_URL: "http://rails-api-service:80"

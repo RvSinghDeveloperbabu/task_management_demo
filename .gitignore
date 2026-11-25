@@ -1,0 +1,100 @@
+# ============================================================
+# SECRETS & CREDENTIALS  (never commit these)
+# ============================================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.csr
+*.jks
+id_rsa*
+id_ed25519*
+*.gpg
+.netrc
+.npmrc
+.pypirc
+credentials
+credentials.*
+**/config/master.key
+**/config/credentials/*.key
+secrets.yml
+secrets.yaml
+*secret*.yaml
+*secret*.yml
+*secret*.json
+.aws/
+.ssh/
+
+# Public AWS RDS CA bundle (not a secret; needed to build the backend image)
+!backend/certs/global-bundle.pem
+
+# ============================================================
+# TERRAFORM  (state and variable files can hold secrets)
+# ============================================================
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+.terraform/
+terraform/.terraform
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.tfplan
+tfplan
+# Note: .terraform.lock.hcl is NOT secret and should be committed.
+
+# ============================================================
+# KUBERNETES
+# ============================================================
+k8s/03_secret.yaml
+kubeconfig
+kubeconfig.*
+*.kubeconfig
+.kube/
+
+# ============================================================
+# BACKEND (Ruby / Rails)
+# ============================================================
+backend/log/*
+backend/tmp/*
+backend/vendor/bundle
+backend/.bundle/
+backend/storage/
+*.sqlite3
+*.sqlite3-*
+
+# ============================================================
+# FRONTEND (Node)
+# ============================================================
+frontend/node_modules
+frontend/dist
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# ============================================================
+# LOGS, DUMPS, LOCAL DATA
+# ============================================================
+*.log
+*.dump
+*.bak
+*.backup
+coverage/
+
+# ============================================================
+# OS / EDITOR NOISE
+# ============================================================
+.DS_Store
+.idea/
+.vscode/
+.ruby-lsp/
+*.swp

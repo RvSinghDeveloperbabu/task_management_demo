@@ -1,0 +1,18 @@
+# Connection details come from DATABASE_URL (a Kubernetes Secret in prod).
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # Puma threads + Sidekiq concurrency both stay below this.
+  pool: <%= ENV.fetch("DB_POOL", 10) %>
+
+development:
+  <<: *default
+  url: <%= ENV.fetch("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/tasks_development") %>
+
+test:
+  <<: *default
+  url: <%= ENV.fetch("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/tasks_test") %>
+
+production:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>
